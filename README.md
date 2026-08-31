@@ -1,1 +1,1 @@
-# -Synqstudiosofficial.github.io
+# Synqstudiosofficial.github.io
