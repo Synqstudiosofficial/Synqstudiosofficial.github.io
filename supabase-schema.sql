@@ -1,0 +1,11 @@
+create table if not exists public.releases(id text primary key,title text not null,release_date date not null,cover_url text not null,spotify_url text default '',apple_url text default '',youtube_url text default '',hyperfollow_url text default '',streams bigint default 0,featured boolean default false,visible boolean default true,sort_order integer default 0,created_at timestamptz default now());
+alter table public.releases enable row level security;
+create policy "public read" on public.releases for select using(visible=true or auth.role()='authenticated');
+create policy "owner insert" on public.releases for insert to authenticated with check(true);
+create policy "owner update" on public.releases for update to authenticated using(true) with check(true);
+create policy "owner delete" on public.releases for delete to authenticated using(true);
+insert into storage.buckets(id,name,public) values('covers','covers',true) on conflict(id) do update set public=true;
+create policy "public covers" on storage.objects for select using(bucket_id='covers');
+create policy "owner uploads" on storage.objects for insert to authenticated with check(bucket_id='covers');
+create policy "owner cover updates" on storage.objects for update to authenticated using(bucket_id='covers');
+create policy "owner cover deletes" on storage.objects for delete to authenticated using(bucket_id='covers');
